@@ -22,7 +22,7 @@ class Config:
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = 'mysql://root:maizhiling456@127.0.0.1:3306/stuInfoManag'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'StuInfoMange.sqlite')
 
 
 class TestingConfig(Config):
