@@ -1,0 +1,10 @@
+{% macro stu_table(pagination) %}
+
+{% for item in pagination.items %}
+    <ul>
+        <li>{{ item[1].name }}</li>
+        <li>{{ item[2].name }}</li>
+        <li>{{ item[2].college }}</li>
+    </ul>
+{% endfor %}
+{% endmacro %}

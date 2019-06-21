@@ -2,6 +2,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from app import login_manager
 from app import db
+from config import RolePermission
+from sqlalchemy import and_
+
+from app.decorators import permission_required
+from config import Permission
 
 
 class User(UserMixin):
@@ -52,27 +57,75 @@ class User(UserMixin):
     def verify_passwd(self, passwd):
         return check_password_hash(self.passwd_hash, passwd)
 
+    def can(self,permission):
+        return (self.permission&permission)==permission
+
     def __repr__(self):
         return '<{} ： {}>'.format(self.__tablename__,self.name)
 
+    @permission_required(Permission.PERSONAL_INFO)
+    def modifyBaseInfo(self,passwd=None):
+        if passwd:
+            self.passwd = passwd
+        db.session.add(self)
+        return db.session.commit()
+
+
+    def getCoursesInfo(self):
+        return db.session.query(Student,Teacher,Course,Course_Teach_Stu).filter(and_(Student.id == Course_Teach_Stu.stu,Teacher.id == Course_Teach_Stu.teach,Course.id==Course_Teach_Stu.course))
+        
 class Student(User,db.Model):
     __tablename__ = 'student'
 
-
+    permission = db.Column(db.Integer,default=RolePermission.STUDENT,nullable=False)
     _class = db.Column(db.String(64))
     courses = db.relationship("Course_Teach_Stu",backref='student')
-    
 
+    @permission_required(RolePermission.STUDENT)
+    def modifyBaseInfo(self,passwd=None):
+        if passwd:
+            self.passwd = passwd
+        db.session.add(self)
+        return db.session.commit()
+
+    @permission_required(RolePermission.STUDENT)
+    def getCoursesInfo(self):
+        result = super().getCoursesInfo().filter(Student.id==self.id)
+        return result
+    
 class Teacher(User,db.Model):
     __tablename__ = 'teacher'
-
+    permission = db.Column(db.Integer,default=RolePermission.TEACHER,nullable=False)
     courses = db.relationship("Course_Teach_Stu",backref='teacher')
 
+    @permission_required(RolePermission.TEACHER)
+    def modifyBaseInfo(self,passwd=None):
+        if passwd:
+            self.passwd = passwd
+        db.session.add(self)
+        return db.session.commit()
+
+    @permission_required(RolePermission.TEACHER)
+    def getCoursesInfo(self):
+        result = super().getCoursesInfo().filter(Teacher.id==self.id)
+        return result
 
 class Admin(User,db.Model):
+    permission = db.Column(db.Integer,default=RolePermission.ADMIN,nullable=False)
     __tablename__ = 'admin'
 
-    
+    @permission_required(RolePermission.ADMIN)
+    def modifyBaseInfo(self,passwd=None):
+        if passwd:
+            self.passwd = passwd
+        db.session.add(self)
+        return db.session.commit()
+
+    @permission_required(RolePermission.ADMIN)
+    def getCoursesInfo(self):
+        result = super().getCoursesInfo()
+        return result
+
 class Course(db.Model):
     __tablename__ = 'course'
     _id = db.Column(db.Integer, primary_key=True)

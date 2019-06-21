@@ -26,6 +26,12 @@ def create_app(config_name):
     app.register_blueprint(main_blueprint)
     from app.auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint,url_prefix='/auth')
+    from app.personal import personal as personal_blueprint
+    app.register_blueprint(personal_blueprint,url_prefix='/personal')
+    from app.course import course 
+    app.register_blueprint(course,url_prefix='/course')
+    from app.student import student 
+    app.register_blueprint(student,url_prefix='/student')
 
     app.app_context().push()
     return app

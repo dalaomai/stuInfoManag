@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "macros.html" as macros %}
+{% import "course/macros.html" as courseMacros %}
+{% block title %}课程信息{% endblock %}
+
+{% block page_content %}
+<!-- <div class="page-header">
+    <h1>Login</h1>
+</div> -->
+<div class="col-md-4">
+    {{ courseMacros.stu_table(pagination) }}
+    {{ macros.pagination_widget(pagination,".index") }}
+</div>
+{% endblock %}

@@ -14,7 +14,7 @@ def login():
     user = User.query_user([form.type.data,form.id.data])
     if user is not None and user.verify_passwd(form.passwd.data):
         login_user(user,form.remember.data)
-        flash("登陆成功" + str(current_user.type))
+        return redirect(url_for("main.index"))
     else:
         flash("登陆失败",'error')
     return render_template('auth/login.html',form = form)
@@ -24,4 +24,4 @@ def login():
 def logout():
     logout_user()
     flash("已退出登陆!")
-    return redirect(url_for("main.index"))
+    return redirect(url_for("auth.login"))

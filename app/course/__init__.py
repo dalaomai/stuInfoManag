@@ -1,4 +1,4 @@
 from flask import Blueprint
-auth = Blueprint('auth',__name__)
+course = Blueprint('course',__name__)
 from . import views
 from ..main import errors
