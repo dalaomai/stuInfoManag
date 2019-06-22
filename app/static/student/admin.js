@@ -1,13 +1,13 @@
 var $table;
 var evt;
 var changeIndex;
-var titleList = new Array('CourseId','CourseName','College');
+var titleList = new Array('Name','StudentId','Sex','_class','Permission','Passwd');
 var rows = new Array()
 
 //初始化bootstrap-table的内容
 function InitMainTable () {
     //记录页面bootstrap-table全局变量$table，方便应用
-    var queryUrl = '/course/data?rnd=' + Math.random()
+    var queryUrl = '/student/data?rnd=' + Math.random()
     $table = $('#table').bootstrapTable({
         editable:true,
         url: queryUrl,                      //请求后台的URL（*）
@@ -57,21 +57,37 @@ function InitMainTable () {
             class:'Id',
             sortable: true
         },{
-            field: 'CourseId',
-            title: '课程号',
-            class:'CourseId',
+            field: 'StudentId',
+            title: '学号',
+            class:'StudentId',
             sortable: true
         }, {
-            field: 'CourseName',
-            title: '课程名',
-            class:'CourseName',
+            field: 'Name',
+            title: '姓名',
+            class:'Name',
             sortable: true
         }, {
-            field:"College",
-            title:"开课学院",
-            class:'College',
+            field:"Sex",
+            title:"性别",
+            class:'Sex',
+            sortable:true,
+            formatter: sexFormatter
+        }, {
+            field:"_class",
+            title:"班级",
+            class:'_class',
             sortable:true
-        }, {
+        },{
+            field:"Permission",
+            title:"权限",
+            class:'Permission',
+            sortable:true
+        },{
+            field:"Passwd",
+            title:"密码",
+            class:'Passwd',
+            sortable:true
+        },{
             field:'ID',
             class:'ID',
             title: '操作',
@@ -89,7 +105,7 @@ function InitMainTable () {
     });
 
     $('#addData').click(function(){
-        $table.bootstrapTable('prepend',{0: undefined,new:true, CourseName: "", CourseId: "", College: ""});
+        $table.bootstrapTable('prepend',{0: undefined,new:true, 'Name':'','StudentId':'','Sex':'','_class':'','Permission':'','Passwd':''});
         initTableEdit();
     });
 };
@@ -97,6 +113,25 @@ function InitMainTable () {
 //初始化表格编辑
 function initTableEdit(){
     $('#table').editableTableWidget();
+
+    $('table td.Sex').on('change',function(evt,newValue){
+        if(evt.currentTarget.innerText==='女' || evt.currentTarget.innerText==='男'){
+            return true;
+        }
+        if(evt.currentTarget.innerText == 0){
+            evt.currentTarget.innerText='男'
+        }else{
+            evt.currentTarget.innerText='女'
+        }
+    });
+
+    $('table td.Passwd').on('change',function(evt,newValue){
+        if(evt.currentTarget.innerText.length<6){
+            toastr.error('密码长度不足');
+            evt.currentTarget.innerText = ''
+        }
+    });
+
     $('table td').on('change',function(evt,newValue){
 
         window.evt = evt;
@@ -107,7 +142,15 @@ function initTableEdit(){
 
             for(var i=0;i<classList.length;i++){
                 if($.inArray(classList[i],window.titleList)>-1){
-                    row[classList[i]] = newValue;
+
+                    row[classList[i]] = evt.currentTarget.innerText;
+                    if(classList[i]=='Sex'){
+                        if(evt.currentTarget.innerText=='女'){
+                            row[classList[i]]=true
+                        }else{
+                            row[classList[i]]=false
+                        }
+                    }
                     $('span[data-index='+window.changeIndex+']')[0].innerHTML = "<a href='javascript:;' class='btn btn-xs blue' onclick=\"EditViewById("+window.changeIndex+")\" title='提交编辑'><span class='glyphicon glyphicon-pencil'></span></a>";
                     return true;
                 }
@@ -118,6 +161,7 @@ function initTableEdit(){
         toastr.warning('禁止修改');
         return false;
     });
+
 }
 
 //操作栏的格式化
@@ -135,6 +179,18 @@ function actionFormatter(value, row, index) {
     }
 
     return result;
+}
+
+//性别数据格式化
+function sexFormatter(value, row, index) {
+    if(value===''){
+        return ''
+    }
+    if(value){
+        return '女'
+    }else{
+        return '男'
+    }
 }
 
 function DeleteByIds(index){

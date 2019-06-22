@@ -29,13 +29,15 @@ class Config:
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'StuInfoMange.sqlite')
+    #SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'StuInfoMange.sqlite')
+    SQLALCHEMY_DATABASE_URI = "mysql://root:maizhiling456@127.0.0.1/StuInfoMange"
 
 
 class TestingConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL') or \
         'sqlite://'
+
 
 
 class ProductionConfig(Config):

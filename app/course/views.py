@@ -1,5 +1,5 @@
 from app.course import course
-from app.course.forms import StuForm
+
 from flask import render_template,flash,redirect,url_for,request
 from flask_login import login_user,current_user,login_required,logout_user
 from config import Config
@@ -64,6 +64,8 @@ def editCourse():
         course.id = request.form.get('CourseId',course.id)
         course.name = request.form.get('CourseName',course.name)
         course.college = request.form.get('College',course.college)
+
+
         db.session.add(course)
         db.session.commit()
     except Exception as e:
@@ -82,6 +84,7 @@ def addCourse():
         course.id = request.form.get('CourseId')
         course.name = request.form.get('CourseName')
         course.college = request.form.get('College')
+            
         db.session.add(course)
         db.session.commit()
     except Exception as e:

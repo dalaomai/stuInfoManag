@@ -52,6 +52,9 @@ class User(UserMixin):
 
     @passwd.setter
     def passwd(self, passwd):
+        if(len(passwd)<6):
+            raise Exception('密码修改失败')
+            return 0
         self.passwd_hash = generate_password_hash(passwd)
 
     def verify_passwd(self, passwd):
@@ -73,6 +76,11 @@ class User(UserMixin):
     @permission_required(RolePermission.ADMIN)
     def getAllCourse(self):
         result = db.session.query(Course)
+        return result
+
+    @permission_required(RolePermission.ADMIN)
+    def getAllStudent(self):
+        result = db.session.query(Student)
         return result
 
     def getCoursesInfo(self):
@@ -139,6 +147,7 @@ class Course(db.Model):
     college = db.Column(db.String(64),nullable=False)
     courses = db.relationship("Course_Teach_Stu",backref='cour')
 
+            
 class Course_Teach_Stu(db.Model):
     __tablename__ = 'course_teach_stu'
     _id = db.Column(db.Integer, primary_key=True)
