@@ -70,6 +70,10 @@ class User(UserMixin):
         db.session.add(self)
         return db.session.commit()
 
+    @permission_required(RolePermission.ADMIN)
+    def getAllCourse(self):
+        result = db.session.query(Course)
+        return result
 
     def getCoursesInfo(self):
         return db.session.query(Student,Teacher,Course,Course_Teach_Stu).filter(and_(Student.id == Course_Teach_Stu.stu,Teacher.id == Course_Teach_Stu.teach,Course.id==Course_Teach_Stu.course))
@@ -125,6 +129,7 @@ class Admin(User,db.Model):
     def getCoursesInfo(self):
         result = super().getCoursesInfo()
         return result
+
 
 class Course(db.Model):
     __tablename__ = 'course'

@@ -4,12 +4,25 @@
 {% import "course/macros.html" as courseMacros %}
 {% block title %}课程信息{% endblock %}
 
+
+
 {% block page_content %}
-<!-- <div class="page-header">
-    <h1>Login</h1>
-</div> -->
-<div class="col-md-4">
-    {{ courseMacros.stu_table(pagination) }}
-    {{ macros.pagination_widget(pagination,".index") }}
+
+<div>
+    <div style="float:right;margin:10px 0px 10px 5px">
+        <button type="button" class="btn btn-default" id="addData"<span style="color:#008000;background-color:#efefef;font-weight:bold;"></span>>
+            <span class="glyphicon glyphicon-plus"></span>
+        </button>
+    </div>
+    <table id="table" class="table">
+    </table>
+
+
 </div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src=../static/course/{{ tableFile }}></script>
+<script src=../static/mindmup-editabletable.js></script>
 {% endblock %}
