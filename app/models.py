@@ -80,17 +80,33 @@ class User(UserMixin):
 
     @permission_required(RolePermission.ADMIN)
     def getAllStudent(self):
-        result = db.session.query(Student)
+        result = db.session.query(Student,_class).filter(Student._class==_class._id)
+        return result
+
+    @permission_required(RolePermission.ADMIN)
+    def getAllTeacher(self):
+        result = db.session.query(Teacher)
+        return result
+
+    @permission_required(RolePermission.ADMIN)
+    def getAllClass(self):
+        result = db.session.query(_class)
+        return result
+
+
+    @permission_required(RolePermission.ROOT)
+    def getAllAdmin(self):
+        result = db.session.query(Admin)
         return result
 
     def getCoursesInfo(self):
-        return db.session.query(Student,Teacher,Course,Course_Teach_Stu).filter(and_(Student.id == Course_Teach_Stu.stu,Teacher.id == Course_Teach_Stu.teach,Course.id==Course_Teach_Stu.course))
+        return db.session.query(Student,Teacher,Course,Course_Teach_Stu,_class).filter(and_(Student.id == Course_Teach_Stu.stu,Teacher.id == Course_Teach_Stu.teach,Course.id==Course_Teach_Stu.course,_class._id==Student._class))
         
 class Student(User,db.Model):
     __tablename__ = 'student'
 
     permission = db.Column(db.Integer,default=RolePermission.STUDENT,nullable=False)
-    _class = db.Column(db.String(64))
+    _class = db.Column(db.Integer,db.ForeignKey('_class._id'),default=0,nullable=False)
     courses = db.relationship("Course_Teach_Stu",backref='student')
 
     @permission_required(RolePermission.STUDENT)
@@ -138,15 +154,20 @@ class Admin(User,db.Model):
         result = super().getCoursesInfo()
         return result
 
-
 class Course(db.Model):
     __tablename__ = 'course'
     _id = db.Column(db.Integer, primary_key=True)
     id = db.Column(db.String(64),unique=True,nullable=False)
     name = db.Column(db.String(64),nullable=False)
     college = db.Column(db.String(64),nullable=False)
+    semester = db.Column(db.String(64))
     courses = db.relationship("Course_Teach_Stu",backref='cour')
 
+class _class(db.Model):
+    __tablename__ = '_class'
+    _id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64),nullable=False,unique=True)
+    students = db.relationship("Student",backref='aclass')
             
 class Course_Teach_Stu(db.Model):
     __tablename__ = 'course_teach_stu'

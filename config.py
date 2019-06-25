@@ -8,12 +8,13 @@ class Permission:
     SOURCE_INFO=0b100
     TEACHER_INFO=0b1000
     ADMIN_INFO=0b10000
+    CLASS_INFO=0b100000
 
 class RolePermission:
     STUDENT = Permission.PERSONAL_INFO | Permission.COURSE_INFO
     TEACHER = Permission.PERSONAL_INFO | Permission.COURSE_INFO | Permission.STUDENT_INFO | Permission.SOURCE_INFO
-    ADMIN = Permission.PERSONAL_INFO | Permission.COURSE_INFO | Permission.STUDENT_INFO | Permission.SOURCE_INFO | Permission.TEACHER_INFO
-    ROOT = Permission.PERSONAL_INFO | Permission.COURSE_INFO | Permission.STUDENT_INFO | Permission.SOURCE_INFO | Permission.TEACHER_INFO | Permission.ADMIN_INFO
+    ADMIN = Permission.PERSONAL_INFO | Permission.COURSE_INFO | Permission.STUDENT_INFO | Permission.SOURCE_INFO | Permission.TEACHER_INFO | Permission.CLASS_INFO
+    ROOT = ADMIN | Permission.ADMIN_INFO 
 
 
 

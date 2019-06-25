@@ -17,7 +17,7 @@ class StuForm(FlaskForm):
         super().__init__()
         self.stype.data = "学生"
         self.id.data= stu.id
-        self.aclass.data = stu._class
+        self.aclass.data = stu.aclass.name
         if stu.sex == 0:
             self.sex.data = '男'
         if stu.sex:

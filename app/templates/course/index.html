@@ -21,6 +21,9 @@
 
 {% block scripts %}
 {{ super() }}
-<script src=../static/course/{{ tableFile }}></script>
+<script type="text/javascript">
+    var mainUrl = "{{ mainUrl }}";
+</script>
 <script src=../static/mindmup-editabletable.js></script>
+<script src=../static/base.js></script>
 {% endblock %}

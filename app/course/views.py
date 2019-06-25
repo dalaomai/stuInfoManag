@@ -7,22 +7,15 @@ from app.decorators import permission_required
 from config import Permission,RolePermission
 import json
 from sqlalchemy import desc,asc
-from app.models import Student,Teacher,Course,Course_Teach_Stu
+from app.models import Student,Teacher,Course,Course_Teach_Stu,_class
 from app import db
 
 @course.route('/index')
 @login_required
 @permission_required(Permission.COURSE_INFO)
 def index():
-    tableFile = 'student.js'
-    if current_user.type == 0:
-        tableFile = 'student.js'
-    if current_user.type == 1:
-        tableFile = 'teacher.js'
-    if current_user.type == 2:
-        tableFile = 'admin.js'
 
-    return render_template('course/index.html',tableFile=tableFile)
+    return render_template('course/index.html',mainUrl='mainData')
 
 @course.route('/data')
 @login_required
@@ -36,6 +29,26 @@ def data():
         return getDataForAdmin()
 
     return None
+
+@course.route('/mainData')
+@login_required
+@permission_required(Permission.COURSE_INFO)
+def mainData():
+    data = {'dataUrl':'data','operateUrls':'','dataFieldes':[],'dataTitles':[],'addFieldes':[],'editFieldes':[]}
+    if current_user.type == 0:
+        data['dataTitles'] = ['课程名','课程号','开课学院','学期','成绩']
+        data['dataFieldes'] = ['CourseName','CourseId','College','Semester','Source']
+    if current_user.type == 1:
+        data['dataTitles'] = ['课程名','课程号','开课学院','学期','班级']
+        data['dataFieldes'] = ['CourseName','CourseId','College','Semester','ClassName']
+    if current_user.type == 2:
+        data['operateUrls'] = {'addUrl':'addCourse','editUrl':'editCourse','delUrl':'delCourse'}
+        data['dataTitles'] = ['Id','课程名','课程号','开课学院','学期']
+        data['dataFieldes'] = ['Id','CourseName','CourseId','College','Semester']
+        data['addFieldes'] = ['CourseName','CourseId','College','Semester']
+        data['editFieldes'] = ['CourseName','CourseId','College','Semester']
+
+    return json.dumps(data)
 
 @course.route('/delCourse',methods=['POST'])
 @login_required 
@@ -64,6 +77,7 @@ def editCourse():
         course.id = request.form.get('CourseId',course.id)
         course.name = request.form.get('CourseName',course.name)
         course.college = request.form.get('College',course.college)
+        course.semester = request.form.get('Semester',course.semester)
 
 
         db.session.add(course)
@@ -84,7 +98,8 @@ def addCourse():
         course.id = request.form.get('CourseId')
         course.name = request.form.get('CourseName')
         course.college = request.form.get('College')
-            
+        course.semester = request.form.get('Semester')
+
         db.session.add(course)
         db.session.commit()
     except Exception as e:
@@ -101,63 +116,7 @@ def getDataForStudent():
     sortOrder = request.args.get('sortOrder','asc')
     queryResult = current_user.getCoursesInfo()
 
-    targetDict = {'CourseName':Course.name,'TeacherName':Teacher.name,'Source':Course_Teach_Stu.source,'College':Course.college,'CourseId':Course.id}
-    if sortOrder=='asc':
-        queryResult = queryResult.order_by(asc(targetDict.get(sort,'CourseName')))
-    else:
-        queryResult = queryResult.order_by(desc(targetDict.get(sort,'CourseName')))
-    
-
-    pagination = queryResult.paginate(page,per_page=rows,error_out=False)
-    datas = []
-    for item in pagination.items :
-        temp = {'CourseName':item[2].name,'TeacherName':item[1].name,'Source':item[3].source,'College':item[2].college,'CourseId':item[2].id}
-        datas.append(temp)
-    datas = {'total':pagination.total,'rows':datas}
-    return str(json.dumps(datas))
-
-@permission_required(RolePermission.TEACHER)
-def getDataForTeacher():
-    page = request.args.get('page',1,type=int)
-    rows = request.args.get('rows',Config.POSTS_PER_PAGE,type=int)
-    sort = request.args.get('sort','CourseName')
-    sortOrder = request.args.get('sortOrder','asc')
-    queryResult = current_user.getCoursesInfo()
-
-    targetDict = {'CourseName':Course.name,'StudentName':Student.name,'Class':Student._class,'College':Course.college,'CourseId':Course.id}
-    if sortOrder=='asc':
-        queryResult = queryResult.order_by(asc(targetDict.get(sort,'CourseName')))
-    else:
-        queryResult = queryResult.order_by(desc(targetDict.get(sort,'CourseName')))
-    
-
-    pagination = queryResult.paginate(page,per_page=rows,error_out=False)
-    datas = []
-    oldItem = []
-    for item in pagination.items :
-        if oldItem==[]:
-            temp = {'CourseName':item[2].name,'Class':item[0]._class,'College':item[2].college,'CourseId':item[2].id}
-            datas.append(temp)
-            oldItem = item
-            continue
-
-        if oldItem[0]._class != item[0]._class and  item[2] != oldItem[2]:
-            temp = {'CourseName':item[2].name,'Class':item[0]._class,'College':item[2].college,'CourseId':item[2].id}
-            datas.append(temp)
-        oldItem = item
-
-    datas = {'total':pagination.total,'rows':datas}
-    return str(json.dumps(datas))
-
-@permission_required(RolePermission.ADMIN)
-def getDataForAdmin():
-    page = request.args.get('page',1,type=int)
-    rows = request.args.get('rows',Config.POSTS_PER_PAGE,type=int)
-    sort = request.args.get('sort','CourseName')
-    sortOrder = request.args.get('sortOrder','asc')
-    queryResult = current_user.getAllCourse()
-
-    targetDict = {'CourseName':Course.name,'CourseId':Course.id,'College':Course.college,'Id':Course._id}
+    targetDict = {'CourseName':Course.name,'CourseId':Course.id,'College':Course.college,'Semester':Course.semester,'Source':Course_Teach_Stu.source}
     if sortOrder=='asc':
         queryResult = queryResult.order_by(asc(targetDict.get(sort,'CourseName')))
     else:
@@ -169,7 +128,59 @@ def getDataForAdmin():
     oldItem = []
     for item in pagination.items :
         if oldItem != item:
-            temp = {'CourseName':item.name,'CourseId':item.id,'College':item.college,'Id':item._id}
+            temp = {'CourseName':item[2].name,'CourseId':item[2].id,'College':item[2].college,'Semester':item[2].semester,'Source':item[3].source}
+            datas.append(temp)
+        oldItem = item
+    datas = {'total':pagination.total,'rows':datas}
+    return str(json.dumps(datas))
+
+@permission_required(RolePermission.TEACHER)
+def getDataForTeacher():
+    page = request.args.get('page',1,type=int)
+    rows = request.args.get('rows',Config.POSTS_PER_PAGE,type=int)
+    sort = request.args.get('sort','CourseName')
+    sortOrder = request.args.get('sortOrder','asc')
+    queryResult = current_user.getCoursesInfo()
+
+    targetDict = {'CourseName':Course.name,'CourseId':Course.id,'College':Course.college,'Semester':Course.semester,'ClassName':_class.name}
+    if sortOrder=='asc':
+        queryResult = queryResult.order_by(asc(targetDict.get(sort,'CourseName')))
+    else:
+        queryResult = queryResult.order_by(desc(targetDict.get(sort,'CourseName')))
+    
+
+    pagination = queryResult.paginate(page,per_page=rows,error_out=False)
+    datas = []
+    oldItem = []
+    for item in pagination.items :
+        if oldItem==[] or (oldItem[4].name != item[4].name and oldItem[2].name != item[2].name):
+            temp = {'CourseName':item[2].name,'CourseId':item[2].id,'College':item[2].college,'Semester':item[2].semester,'ClassName':item[4].name}
+            datas.append(temp)
+        oldItem = item
+    datas = {'total':pagination.total,'rows':datas}
+    return str(json.dumps(datas))
+
+@permission_required(RolePermission.ADMIN)
+def getDataForAdmin():
+    page = request.args.get('page',1,type=int)
+    rows = request.args.get('rows',Config.POSTS_PER_PAGE,type=int)
+    sort = request.args.get('sort','CourseName')
+    sortOrder = request.args.get('sortOrder','asc')
+    queryResult = current_user.getAllCourse()
+
+    targetDict = {'CourseName':Course.name,'CourseId':Course.id,'College':Course.college,'Id':Course._id,'Semester':Course.semester}
+    if sortOrder=='asc':
+        queryResult = queryResult.order_by(asc(targetDict.get(sort,'CourseName')))
+    else:
+        queryResult = queryResult.order_by(desc(targetDict.get(sort,'CourseName')))
+    
+
+    pagination = queryResult.paginate(page,per_page=rows,error_out=False)
+    datas = []
+    oldItem = []
+    for item in pagination.items :
+        if oldItem != item:
+            temp = {'CourseName':item.name,'CourseId':item.id,'College':item.college,'Id':item._id,'Semester':item.semester}
             datas.append(temp)
         oldItem = item
     datas = {'total':pagination.total,'rows':datas}

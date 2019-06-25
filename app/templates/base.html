@@ -39,15 +39,34 @@
             <a class="navbar-brand" href="{{ url_for('main.index') }}">学生信息管理系统</a>
         </div>
         <div class="navbar-collapse collapse">
+
+            
             <ul class="nav navbar-nav">
-                <li><a href="{{ url_for('personal.index') }}">个人信息</a></li>
+                <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">基础数据<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ url_for('personal.index') }}">个人信息</a></li>
+                        <li><a href="{{ url_for('course.index') }}">课程信息</a></li>
+                        <li><a href="{{ url_for('student.index') }}">学生信息</a></li>
+                        <li><a href="{{ url_for('source.index') }}">学生课程及成绩管理</a></li>
+                        <li><a href="{{ url_for('teacher.index') }}">教师信息</a></li>
+                        <li><a href="{{ url_for('aclass.index') }}">班级信息</a></li>
+                    </ul>
+                </li>
             </ul>
             <ul class="nav navbar-nav">
-                <li><a href="{{ url_for('course.index') }}">课程信息</a></li>
+                <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">数据统计<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">个人成绩</a></li>
+                        <li><a href="#">课程成绩</a></li>
+                        <li><a href="#">班级成绩</a></li>
+                    </ul>
+                </li>
             </ul>
             <ul class="nav navbar-nav">
-                <li><a href="{{ url_for('student.index') }}">学生信息</a></li>
+                <li><a href="{{ url_for('admin.index') }}">管理员信息</a></li>
             </ul>
+
+
             <ul class="nav navbar-nav navbar-right">
                 {% if current_user.is_authenticated %}
                 <li><a href="{{ url_for('auth.logout') }}">{{ current_user }}  Log Out</a></li>
@@ -76,6 +95,7 @@
 
 {% block scripts %}
 {{ moment.include_moment() }}
+
 <script type="text/javascript">
     toastr.options = {  
         closeButton: true,  

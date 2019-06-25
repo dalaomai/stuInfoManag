@@ -1,7 +1,7 @@
 var $table;
 var evt;
 var changeIndex;
-var titleList = new Array('Name','StudentId','Sex','_class','Permission','Passwd');
+var titleList = new Array('Name','StudentId','Sex','_class','Passwd');
 var rows = new Array()
 
 //初始化bootstrap-table的内容
@@ -78,11 +78,6 @@ function InitMainTable () {
             class:'_class',
             sortable:true
         },{
-            field:"Permission",
-            title:"权限",
-            class:'Permission',
-            sortable:true
-        },{
             field:"Passwd",
             title:"密码",
             class:'Passwd',
@@ -105,7 +100,7 @@ function InitMainTable () {
     });
 
     $('#addData').click(function(){
-        $table.bootstrapTable('prepend',{0: undefined,new:true, 'Name':'','StudentId':'','Sex':'','_class':'','Permission':'','Passwd':''});
+        $table.bootstrapTable('prepend',{0: undefined,new:true, 'Name':'','StudentId':'','Sex':'','_class':'','Passwd':''});
         initTableEdit();
     });
 };
@@ -196,7 +191,7 @@ function sexFormatter(value, row, index) {
 function DeleteByIds(index){
     console.log(window.rows[index])
     $.post(
-        "delCourse",
+        "delStudent",
         window.rows[index],
         function(data,status){
             data = JSON.parse(data);
@@ -213,7 +208,7 @@ function DeleteByIds(index){
 function EditViewById(index){
     console.log(window.rows[index]);
     $.post(
-        "editCourse",
+        "editStudent",
         window.rows[index],
         function(data,status){
             console.log(data)
@@ -232,7 +227,7 @@ function AddById(index){
 
     console.log(window.rows[index]);
     $.post(
-        "addCourse",
+        "addStudent",
         window.rows[index],
         function(data,status){
             console.log(data)

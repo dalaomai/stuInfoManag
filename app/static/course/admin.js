@@ -1,7 +1,7 @@
 var $table;
 var evt;
 var changeIndex;
-var titleList = new Array('CourseId','CourseName','College');
+var titleList = new Array('CourseId','CourseName','College','Semester');
 var rows = new Array()
 
 //初始化bootstrap-table的内容
@@ -72,6 +72,11 @@ function InitMainTable () {
             class:'College',
             sortable:true
         }, {
+            field:"Semester",
+            title:"学期",
+            class:'Semester',
+            sortable:true
+        }, {
             field:'ID',
             class:'ID',
             title: '操作',
@@ -89,7 +94,7 @@ function InitMainTable () {
     });
 
     $('#addData').click(function(){
-        $table.bootstrapTable('prepend',{0: undefined,new:true, CourseName: "", CourseId: "", College: ""});
+        $table.bootstrapTable('prepend',{0: undefined,new:true, CourseName: "", CourseId: "", College: "",Semester:''});
         initTableEdit();
     });
 };

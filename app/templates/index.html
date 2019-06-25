@@ -4,11 +4,11 @@
 {% block title %}学生信息管理系统{% endblock %}
 
 {% block page_content %}
-<div class="page-header">
+
     {% if current_user.is_authenticated %}
         欢迎，{{current_user.name}}
     {% else %}
         未登录
     {% endif %}
-</div>
+
 {% endblock %}

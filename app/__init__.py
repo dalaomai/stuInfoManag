@@ -32,6 +32,14 @@ def create_app(config_name):
     app.register_blueprint(course,url_prefix='/course')
     from app.student import student 
     app.register_blueprint(student,url_prefix='/student')
+    from app.source import source 
+    app.register_blueprint(source,url_prefix='/source')
+    from app.teacher import teacher 
+    app.register_blueprint(teacher,url_prefix='/teacher')
+    from app.admin import admin 
+    app.register_blueprint(admin,url_prefix='/admin')
+    from app.aclass import aclass 
+    app.register_blueprint(aclass,url_prefix='/aclass')
 
     app.app_context().push()
     return app
