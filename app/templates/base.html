@@ -56,9 +56,8 @@
             <ul class="nav navbar-nav">
                 <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">数据统计<b class="caret"></b></a>
                     <ul class="dropdown-menu">
-                        <li><a href="#">个人成绩</a></li>
-                        <li><a href="#">课程成绩</a></li>
-                        <li><a href="#">班级成绩</a></li>
+                        <li><a href="{{ url_for('statistic.studentStatistic') }}">个人成绩</a></li>
+                        <li><a href="{{ url_for('statistic.classStatistic') }}">班级成绩</a></li>
                     </ul>
                 </li>
             </ul>

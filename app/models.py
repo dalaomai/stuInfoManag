@@ -160,7 +160,6 @@ class Course(db.Model):
     id = db.Column(db.String(64),unique=True,nullable=False)
     name = db.Column(db.String(64),nullable=False)
     college = db.Column(db.String(64),nullable=False)
-    semester = db.Column(db.String(64))
     courses = db.relationship("Course_Teach_Stu",backref='cour')
 
 class _class(db.Model):
@@ -176,6 +175,7 @@ class Course_Teach_Stu(db.Model):
     teach = db.Column(db.Integer,db.ForeignKey('teacher.id'),nullable=False)
     course = db.Column(db.String(64),db.ForeignKey('course.id'),nullable=False)
     source = db.Column(db.Integer,nullable=True)
+    semester = db.Column(db.String(64),nullable=False)
     
 @login_manager.user_loader
 def load_user(type_id):

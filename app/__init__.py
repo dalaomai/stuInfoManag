@@ -40,6 +40,8 @@ def create_app(config_name):
     app.register_blueprint(admin,url_prefix='/admin')
     from app.aclass import aclass 
     app.register_blueprint(aclass,url_prefix='/aclass')
+    from app.statistic import statistic 
+    app.register_blueprint(statistic,url_prefix='/statistic')
 
     app.app_context().push()
     return app

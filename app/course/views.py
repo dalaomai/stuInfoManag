@@ -43,10 +43,10 @@ def mainData():
         data['dataFieldes'] = ['CourseName','CourseId','College','Semester','ClassName']
     if current_user.type == 2:
         data['operateUrls'] = {'addUrl':'addCourse','editUrl':'editCourse','delUrl':'delCourse'}
-        data['dataTitles'] = ['Id','课程名','课程号','开课学院','学期']
-        data['dataFieldes'] = ['Id','CourseName','CourseId','College','Semester']
-        data['addFieldes'] = ['CourseName','CourseId','College','Semester']
-        data['editFieldes'] = ['CourseName','CourseId','College','Semester']
+        data['dataTitles'] = ['Id','课程名','课程号','开课学院']
+        data['dataFieldes'] = ['Id','CourseName','CourseId','College']
+        data['addFieldes'] = ['CourseName','CourseId','College']
+        data['editFieldes'] = ['CourseName','CourseId','College']
 
     return json.dumps(data)
 
@@ -77,7 +77,6 @@ def editCourse():
         course.id = request.form.get('CourseId',course.id)
         course.name = request.form.get('CourseName',course.name)
         course.college = request.form.get('College',course.college)
-        course.semester = request.form.get('Semester',course.semester)
 
 
         db.session.add(course)
@@ -98,7 +97,6 @@ def addCourse():
         course.id = request.form.get('CourseId')
         course.name = request.form.get('CourseName')
         course.college = request.form.get('College')
-        course.semester = request.form.get('Semester')
 
         db.session.add(course)
         db.session.commit()
@@ -116,7 +114,7 @@ def getDataForStudent():
     sortOrder = request.args.get('sortOrder','asc')
     queryResult = current_user.getCoursesInfo()
 
-    targetDict = {'CourseName':Course.name,'CourseId':Course.id,'College':Course.college,'Semester':Course.semester,'Source':Course_Teach_Stu.source}
+    targetDict = {'CourseName':Course.name,'CourseId':Course.id,'College':Course.college,'Semester':Course_Teach_Stu.semester,'Source':Course_Teach_Stu.source}
     if sortOrder=='asc':
         queryResult = queryResult.order_by(asc(targetDict.get(sort,'CourseName')))
     else:
@@ -128,7 +126,7 @@ def getDataForStudent():
     oldItem = []
     for item in pagination.items :
         if oldItem != item:
-            temp = {'CourseName':item[2].name,'CourseId':item[2].id,'College':item[2].college,'Semester':item[2].semester,'Source':item[3].source}
+            temp = {'CourseName':item[2].name,'CourseId':item[2].id,'College':item[2].college,'Semester':item[3].semester,'Source':item[3].source}
             datas.append(temp)
         oldItem = item
     datas = {'total':pagination.total,'rows':datas}
@@ -142,7 +140,7 @@ def getDataForTeacher():
     sortOrder = request.args.get('sortOrder','asc')
     queryResult = current_user.getCoursesInfo()
 
-    targetDict = {'CourseName':Course.name,'CourseId':Course.id,'College':Course.college,'Semester':Course.semester,'ClassName':_class.name}
+    targetDict = {'CourseName':Course.name,'CourseId':Course.id,'College':Course.college,'Semester':Course_Teach_Stu.semester,'ClassName':_class.name}
     if sortOrder=='asc':
         queryResult = queryResult.order_by(asc(targetDict.get(sort,'CourseName')))
     else:
@@ -154,7 +152,7 @@ def getDataForTeacher():
     oldItem = []
     for item in pagination.items :
         if oldItem==[] or (oldItem[4].name != item[4].name and oldItem[2].name != item[2].name):
-            temp = {'CourseName':item[2].name,'CourseId':item[2].id,'College':item[2].college,'Semester':item[2].semester,'ClassName':item[4].name}
+            temp = {'CourseName':item[2].name,'CourseId':item[2].id,'College':item[2].college,'Semester':item[3].semester,'ClassName':item[4].name}
             datas.append(temp)
         oldItem = item
     datas = {'total':pagination.total,'rows':datas}
@@ -168,7 +166,7 @@ def getDataForAdmin():
     sortOrder = request.args.get('sortOrder','asc')
     queryResult = current_user.getAllCourse()
 
-    targetDict = {'CourseName':Course.name,'CourseId':Course.id,'College':Course.college,'Id':Course._id,'Semester':Course.semester}
+    targetDict = {'CourseName':Course.name,'CourseId':Course.id,'College':Course.college,'Id':Course._id}
     if sortOrder=='asc':
         queryResult = queryResult.order_by(asc(targetDict.get(sort,'CourseName')))
     else:
@@ -180,7 +178,7 @@ def getDataForAdmin():
     oldItem = []
     for item in pagination.items :
         if oldItem != item:
-            temp = {'CourseName':item.name,'CourseId':item.id,'College':item.college,'Id':item._id,'Semester':item.semester}
+            temp = {'CourseName':item.name,'CourseId':item.id,'College':item.college,'Id':item._id}
             datas.append(temp)
         oldItem = item
     datas = {'total':pagination.total,'rows':datas}

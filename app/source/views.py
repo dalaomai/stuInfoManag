@@ -32,8 +32,8 @@ def mainData():
         data['operateUrls'] = {'addUrl':'addSource','editUrl':'editSource','delUrl':'delSource'}
         data['dataTitles'] = ['Id','姓名','学号','性别','班级','班级ID','老师','老师工号','课程名','课程ID','开课学期','成绩']
         data['dataFieldes'] = ['Id','StudentName','StudentId','Sex','ClassName','ClassId','TeacherName','TeacherId','CourseName','CourseId','Semester','Source']
-        data['addFieldes'] = ['StudentId','TeacherId','CourseId','Source']
-        data['editFieldes'] = ['StudentId','TeacherId','CourseId','Source']
+        data['addFieldes'] = ['StudentId','TeacherId','CourseId','Semester','Source']
+        data['editFieldes'] = ['StudentId','TeacherId','CourseId','Semester','Source']
 
     return json.dumps(data)
 
@@ -57,7 +57,7 @@ def getDataForTeacher():
     sortOrder = request.args.get('sortOrder','asc')
     queryResult = current_user.getCoursesInfo()
 
-    targetDict = {'StudentName':Student.name,'StudentId':Student.id,'ClassId':_class._id,'CourseName':Course.name,'CourseId':Course.id,'Source':Course_Teach_Stu.source,'Semester':Course.semester,'ClassName':_class.name,'Id':Course_Teach_Stu._id}
+    targetDict = {'StudentName':Student.name,'StudentId':Student.id,'ClassId':_class._id,'CourseName':Course.name,'CourseId':Course.id,'Source':Course_Teach_Stu.source,'Semester':Course_Teach_Stu.semester,'ClassName':_class.name,'Id':Course_Teach_Stu._id}
     if sortOrder=='asc':
         queryResult = queryResult.order_by(asc(targetDict.get(sort,'StudentName')))
     else:
@@ -69,7 +69,7 @@ def getDataForTeacher():
     datas = []
     for item in pagination.items :
 
-        temp = {'StudentName':item[0].name,'StudentId':item[0].id,'ClassId':item[4]._id,'CourseName':item[2].name,'CourseId':item[2].id,'Source':item[3].source,'Semester':item[2].semester,'ClassName':item[4].name,'Id':item[3]._id}
+        temp = {'StudentName':item[0].name,'StudentId':item[0].id,'ClassId':item[4]._id,'CourseName':item[2].name,'CourseId':item[2].id,'Source':item[3].source,'Semester':item[3].semester,'ClassName':item[4].name,'Id':item[3]._id}
         datas.append(temp)
 
     datas = {'total':pagination.total,'rows':datas}
@@ -83,7 +83,7 @@ def getDataForAdmin():
     sortOrder = request.args.get('sortOrder','asc')
     queryResult = current_user.getCoursesInfo()
 
-    targetDict = {'StudentName':Student.name,'StudentId':Student.id,'ClassId':_class._id,'CourseName':Course.name,'CourseId':Course.id,'Source':Course_Teach_Stu.source,'Id':Course_Teach_Stu._id,'TeacherId':Teacher.id,'TeacherName':Teacher.name,'Semester':Course.semester,'ClassName':_class.name}
+    targetDict = {'StudentName':Student.name,'StudentId':Student.id,'ClassId':_class._id,'CourseName':Course.name,'CourseId':Course.id,'Source':Course_Teach_Stu.source,'Id':Course_Teach_Stu._id,'TeacherId':Teacher.id,'TeacherName':Teacher.name,'Semester':Course_Teach_Stu.semester,'ClassName':_class.name}
     if sortOrder=='asc':
         queryResult = queryResult.order_by(asc(targetDict.get(sort,'name')))
     else:
@@ -95,7 +95,7 @@ def getDataForAdmin():
     datas = []
     for item in pagination.items :
 
-        temp = {'StudentName':item[0].name,'StudentId':item[0].id,'ClassId':item[4]._id,'CourseName':item[2].name,'CourseId':item[2].id,'Source':item[3].source,'Id':item[3]._id,'TeacherId':item[1].id,'TeacherName':item[1].name,'Semester':item[2].semester,'ClassName':item[4].name}
+        temp = {'StudentName':item[0].name,'StudentId':item[0].id,'ClassId':item[4]._id,'CourseName':item[2].name,'CourseId':item[2].id,'Source':item[3].source,'Id':item[3]._id,'TeacherId':item[1].id,'TeacherName':item[1].name,'Semester':item[3].semester,'ClassName':item[4].name}
         datas.append(temp)
 
     datas = {'total':pagination.total,'rows':datas}
@@ -138,6 +138,7 @@ def editSourceForAdmin():
         course_teach_stu.stu = request.form.get('StudentId',course_teach_stu.stu)
         course_teach_stu.teach = request.form.get('TeacherId',course_teach_stu.teach)
         course_teach_stu.course = request.form.get('CourseId',course_teach_stu.course)
+        course_teach_stu.semester = request.form.get('Semester',course_teach_stu.semester)
         
         db.session.add(course_teach_stu)
         db.session.commit()
@@ -159,6 +160,8 @@ def addSource():
         course_teach_stu.teach = request.form.get('TeacherId',course_teach_stu.teach)
         course_teach_stu.course = request.form.get('CourseId',course_teach_stu.course)
         course_teach_stu.source = request.form.get('Source',course_teach_stu.source)
+        course_teach_stu.semester = request.form.get('Semester',course_teach_stu.semester)
+
         if(course_teach_stu.source==''):
             course_teach_stu.source=None
 
